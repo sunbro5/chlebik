@@ -36,7 +36,7 @@ class OrderControllerTest extends AbstractChlebikIntegrationTest {
     }
 
     @Test
-    void givenProductQuantityHundred_whenCallCreateOrderHundredTimes_shouldProcessItWithRemainingZero() throws ExecutionException, InterruptedException {
+    void givenProductQuantityFifty_whenCallCreateOrderFiftyTimes_shouldProcessItWithRemainingZero() throws ExecutionException, InterruptedException {
         CreateOrderRequest orderRequest = CreateOrderRequest.builder()
                 .items(List.of(CreateOrderItemRequest.builder()
                         .productId(2000007L)
