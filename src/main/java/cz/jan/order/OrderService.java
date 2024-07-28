@@ -4,14 +4,12 @@ import cz.jan.order.exception.OrderNotFoundException;
 import cz.jan.order.model.CreateOrderRequest;
 import cz.jan.order.model.Order;
 import cz.jan.order.model.OrderStateType;
-import cz.jan.order.repository.OrderEntity;
+import cz.jan.order.repository.model.OrderEntity;
 import cz.jan.order.repository.OrderRepository;
 import cz.jan.product.repository.ProductEntity;
-import cz.jan.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -46,10 +44,11 @@ public class OrderService {
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
-    public void createOrder(CreateOrderRequest orderRequest, Map<Long, ProductEntity> productsToAddById) {
+    public Order createOrder(CreateOrderRequest orderRequest, Map<Long, ProductEntity> productsToAddById) {
         OrderEntity orderToSave = orderMapper.toCreateOrderEntity(orderRequest, productsToAddById);
         OrderEntity savedOrder = orderRepository.save(orderToSave);
         log.info("Created order {}", savedOrder);
+        return orderMapper.toOrder(savedOrder);
     }
 
     public void setOrderState(OrderEntity orderEntity, OrderStateType orderState) {

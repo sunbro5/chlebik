@@ -5,20 +5,39 @@ import cz.jan.order.exception.OrderInvalidActionException;
 import cz.jan.order.exception.OrderNotFoundException;
 import cz.jan.order.exception.OrderProductQuantityException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.validation.method.MethodValidationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ApiError handleConstraintViolation(ConstraintViolationException ex) {
-        var errors = ex.getConstraintViolations().stream()
-                .map(constraintViolation ->
-                        constraintViolation.getPropertyPath() + ": " + constraintViolation.getMessage())
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ApiError handleConstraintViolation(MethodArgumentNotValidException ex) {
+        var errors = Stream.concat(
+                        ex.getBindingResult().getFieldErrors().stream()
+                                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage()),
+                        ex.getBindingResult().getGlobalErrors().stream()
+                                .map(objectError -> objectError.getObjectName() + ": " + objectError.getDefaultMessage()))
                 .toList();
         return ApiError.builder()
                 .message("Invalid request body with errors")
@@ -29,6 +48,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ApiError handleGlobalException(Exception ex) {
+        log.error("GeneralError", ex);
         return ApiError.builder()
                 .message(ex.getMessage())
                 .build();

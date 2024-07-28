@@ -1,9 +1,8 @@
-package cz.jan.order.state;
+package cz.jan.order.strategy;
 
 import cz.jan.order.OrderService;
 import cz.jan.order.model.OrderStateType;
-import cz.jan.order.repository.OrderEntity;
-import org.springframework.transaction.annotation.Transactional;
+import cz.jan.order.repository.model.OrderEntity;
 
 public abstract class AbstractOrderStrategy {
 
@@ -15,10 +14,8 @@ public abstract class AbstractOrderStrategy {
 
     public abstract OrderStateType getType();
 
-    @Transactional
     public abstract void orderPayment(OrderEntity orderEntity);
 
-    @Transactional
     public abstract void orderCancel(OrderEntity orderEntity);
 
 }

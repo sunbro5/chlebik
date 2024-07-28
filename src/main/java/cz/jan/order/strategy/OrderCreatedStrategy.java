@@ -1,10 +1,10 @@
-package cz.jan.order.state;
+package cz.jan.order.strategy;
 
 import cz.jan.order.OrderService;
 import cz.jan.order.exception.OrderInvalidActionException;
 import cz.jan.order.model.OrderStateType;
-import cz.jan.order.repository.OrderEntity;
-import cz.jan.order.repository.OrderItemEntity;
+import cz.jan.order.repository.model.OrderEntity;
+import cz.jan.order.repository.model.OrderItemEntity;
 import cz.jan.product.repository.ProductEntity;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ public class OrderCreatedStrategy extends AbstractOrderStrategy {
     private void checkOrderItemsStillActive(OrderEntity orderEntity) {
         boolean allItemsActive = orderEntity.getItems().stream()
                 .map(OrderItemEntity::getProduct)
-                .allMatch(ProductEntity::isActive);
+                .allMatch(ProductEntity::getActive);
         if (!allItemsActive) {
             orderService.setOrderState(orderEntity, OrderStateType.CANCELED);
             throw new OrderInvalidActionException("Items in order are no longer active, order is canceled");

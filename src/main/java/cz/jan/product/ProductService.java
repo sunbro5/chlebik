@@ -37,13 +37,14 @@ public class ProductService {
                 .map(productMapper::toProduct);
     }
 
-    public void createProduct(CreateProductRequest createProductRequest) {
+    public Product createProduct(CreateProductRequest createProductRequest) {
         ProductEntity productEntity = productMapper.toProductEntity(createProductRequest);
         ProductEntity savedProductEntity = productRepository.save(productEntity);
         log.info("Created product {}", savedProductEntity);
+        return productMapper.toProduct(savedProductEntity);
     }
 
-    public void updateProduct(long productId, UpdateProductRequest createProductRequest) {
+    public Product updateProduct(long productId, UpdateProductRequest createProductRequest) {
         ProductEntity productEntity = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product " + productId + " does not exist"));
@@ -54,6 +55,7 @@ public class ProductService {
 
         ProductEntity savedProductEntity = productRepository.save(productEntity);
         log.info("Updated product {}", savedProductEntity);
+        return productMapper.toProduct(savedProductEntity);
     }
 
     public void deactivateProduct(long productId) {

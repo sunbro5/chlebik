@@ -4,8 +4,8 @@ import cz.jan.order.model.CreateOrderItemRequest;
 import cz.jan.order.model.CreateOrderRequest;
 import cz.jan.order.model.Order;
 import cz.jan.order.model.OrderItem;
-import cz.jan.order.repository.OrderEntity;
-import cz.jan.order.repository.OrderItemEntity;
+import cz.jan.order.repository.model.OrderEntity;
+import cz.jan.order.repository.model.OrderItemEntity;
 import cz.jan.product.repository.ProductEntity;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -17,6 +17,7 @@ import java.util.Map;
 @Mapper(componentModel = "spring", imports = {OffsetDateTime.class})
 public interface OrderMapper {
 
+    @Mapping(target = "orderId", source = "id")
     Order toOrder(OrderEntity orderEntity);
 
     @Mapping(target = "productId", source = "product.id")

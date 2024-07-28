@@ -1,44 +1,43 @@
-package cz.jan.product.repository;
+package cz.jan.order.repository.model;
 
+import cz.jan.product.repository.ProductEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name="PRODUCT")
-public class ProductEntity {
+@Table(name="ORDER_ITEM")
+public class OrderItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="ID")
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name="NAME", nullable=false)
-    private String name;
+    @ManyToOne
+    //@MapsId("orderId")
+    @JoinColumn(name = "ORDER_ID")
+    private OrderEntity order;
+
+    @ManyToOne
+    //@MapsId("productId")
+    @JoinColumn(name = "PRODUCT_ID")
+    private ProductEntity product;
 
     @Column(name="QUANTITY", nullable=false)
     private Long quantity;
-
-    @Column(name="PRICE_PER_UNIT", nullable=false, scale = 2)
-    private BigDecimal pricePerUnit;
-
-    @Column(name="ACTIVE", nullable=false)
-    private Boolean active;
-
-    @Version
-    @Column(name="VERSION")
-    private Long version;
 
 }

@@ -12,6 +12,7 @@ public interface ProductMapper {
     Product toProduct(ProductEntity productEntity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "active", constant = "true")
     ProductEntity toProductEntity(CreateProductRequest createProductRequest);
 
 }

@@ -3,7 +3,8 @@ package cz.jan.order.model;
 import java.util.List;
 
 public record Order(
-        long orderId,
+        Long orderId,
+        OrderStateType state,
         List<OrderItem> items
 ) {
 }

@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    private final OrderActionFacade orderActionFacade;
+    private final OrderActionService orderActionFacade;
     private final OrderService orderService;
 
     @GetMapping
@@ -33,8 +33,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public void createOrder(@RequestBody @Valid CreateOrderRequest orderRequest) {
-        orderActionFacade.createOrder(orderRequest);
+    public Order createOrder(@RequestBody @Valid CreateOrderRequest orderRequest) {
+        return orderActionFacade.createOrder(orderRequest);
     }
 
     @PostMapping("/{orderId}/payment")

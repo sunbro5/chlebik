@@ -1,32 +1,31 @@
-package cz.jan.order.state;
+package cz.jan.order.strategy;
 
 import cz.jan.order.OrderService;
 import cz.jan.order.exception.OrderInvalidActionException;
 import cz.jan.order.model.OrderStateType;
-import cz.jan.order.repository.OrderEntity;
+import cz.jan.order.repository.model.OrderEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderPayedStrategy extends AbstractOrderStrategy {
+public class OrderCanceledStrategy extends AbstractOrderStrategy {
 
-    protected OrderPayedStrategy(OrderService orderService) {
+    protected OrderCanceledStrategy(OrderService orderService) {
         super(orderService);
     }
 
     @Override
     public OrderStateType getType() {
-        return OrderStateType.PAYED;
+        return OrderStateType.CANCELED;
     }
 
     @Override
     public void orderPayment(OrderEntity orderEntity) {
-        throw new OrderInvalidActionException("Order is already payed");
+        throw new OrderInvalidActionException("Cannot do payment for canceled order");
     }
 
     @Override
     public void orderCancel(OrderEntity orderEntity) {
-        //TODO handle client refund
-        orderService.setOrderState(orderEntity, OrderStateType.CANCELED);
+        throw new OrderInvalidActionException("Order is already canceled");
     }
 
 }
