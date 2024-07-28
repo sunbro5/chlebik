@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -29,5 +28,8 @@ public class ProductEntity {
 
     @Column(name="PRICE_PER_UNIT", nullable=false)
     private double pricePerUnit;
+
+    @Column(name="ACTIVE", nullable=false)
+    private boolean active;
 
 }

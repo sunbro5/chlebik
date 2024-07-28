@@ -4,6 +4,7 @@ public record Product(
         Long id,
         String name,
         Long quantity,
-        Double pricePerUnit
+        Double pricePerUnit,
+        Boolean active
 ) {
 }

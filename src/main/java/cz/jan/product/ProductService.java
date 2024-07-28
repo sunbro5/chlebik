@@ -1,6 +1,6 @@
 package cz.jan.product;
 
-import cz.jan.exception.ResourceDoesNotExist;
+import cz.jan.common.error.exception.ResourceNotFoundException;
 import cz.jan.product.model.CreateProductRequest;
 import cz.jan.product.model.Product;
 import cz.jan.product.model.UpdateProductRequest;
@@ -32,6 +32,11 @@ public class ProductService {
                 .map(productMapper::toProduct);
     }
 
+    public Optional<Product> getActiveProduct(long productId) {
+        return productRepository.findByIdAndActiveTrue(productId)
+                .map(productMapper::toProduct);
+    }
+
     public void createProduct(CreateProductRequest createProductRequest) {
         ProductEntity productEntity = productMapper.toProductEntity(createProductRequest);
         ProductEntity savedProductEntity = productRepository.save(productEntity);
@@ -40,8 +45,8 @@ public class ProductService {
 
     public void updateProduct(long productId, UpdateProductRequest createProductRequest) {
         ProductEntity productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceDoesNotExist(String.format(
-                        "Product %d does not exist", productId)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product " + productId + " does not exist"));
 
         Optional.ofNullable(createProductRequest.name()).ifPresent(productEntity::setName);
         Optional.ofNullable(createProductRequest.quantity()).ifPresent(productEntity::setQuantity);
@@ -51,7 +56,12 @@ public class ProductService {
         log.info("Updated product {}", savedProductEntity);
     }
 
-    public void deleteProduct(long productId) {
-        productRepository.deleteById(productId);
+    public void deactivateProduct(long productId) {
+        ProductEntity productEntity = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product " + productId + " does not exist"));
+        productEntity.setActive(false);
+        productRepository.save(productEntity);
+        log.info("Deactivate product {}", productId);
     }
 }

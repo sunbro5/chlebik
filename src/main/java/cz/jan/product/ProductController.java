@@ -24,28 +24,28 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<Product> getProducts(){
+    public List<Product> getProducts() {
         return productService.getAllProducts();
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProduct(@PathVariable long productId){
+    public ResponseEntity<Product> getProduct(@PathVariable long productId) {
         return ResponseEntity.of(productService.getProduct(productId));
     }
 
     @PostMapping
-    public void createProduct(@RequestBody CreateProductRequest createProductRequest){
+    public void createProduct(@RequestBody CreateProductRequest createProductRequest) {
         productService.createProduct(createProductRequest);
     }
 
     @PutMapping("/{productId}")
-    public void updateProduct(@PathVariable long productId, @RequestBody UpdateProductRequest createProductRequest){
+    public void updateProduct(@PathVariable long productId, @RequestBody UpdateProductRequest createProductRequest) {
         productService.updateProduct(productId, createProductRequest);
     }
 
     @DeleteMapping("/{productId}")
-    public void deleteProduct(@PathVariable long productId){
-        productService.deleteProduct(productId);
+    public void deleteProduct(@PathVariable long productId) {
+        productService.deactivateProduct(productId);
     }
 
 
