@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    private final OrderActionService orderActionFacade;
+    private final OrderActionDelegator orderActionFacade;
     private final OrderService orderService;
 
     @GetMapping

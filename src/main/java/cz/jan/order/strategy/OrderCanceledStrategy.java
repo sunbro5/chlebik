@@ -1,5 +1,6 @@
 package cz.jan.order.strategy;
 
+import cz.jan.order.OrderActionService;
 import cz.jan.order.OrderService;
 import cz.jan.order.exception.OrderInvalidActionException;
 import cz.jan.order.model.OrderStateType;
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderCanceledStrategy extends AbstractOrderStrategy {
 
-    protected OrderCanceledStrategy(OrderService orderService) {
-        super(orderService);
+
+    protected OrderCanceledStrategy(OrderService orderService, OrderActionService orderActionService) {
+        super(orderService, orderActionService);
     }
 
     @Override

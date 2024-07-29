@@ -6,10 +6,12 @@ import cz.jan.order.model.CreateOrderItemRequest;
 import cz.jan.order.model.CreateOrderRequest;
 import cz.jan.order.model.Order;
 import cz.jan.order.model.OrderStateType;
+import cz.jan.product.repository.ProductEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -98,8 +100,17 @@ class OrderControllerTest extends AbstractChlebikIntegrationTest {
 
     @Test
     void cancelOrder() throws Exception {
-        callPost("/api/order/1000002/cancel")
+        long productId = 2000009;
+
+        Optional<ProductEntity> product = productRepository.findById(productId);
+        assertTrue(product.isPresent());
+        assertEquals(10, product.get().getQuantity());
+
+        callPost("/api/order/1000005/cancel")
                 .andExpect(status().isOk());
-        assertEquals(OrderStateType.CANCELED, orderRepository.findById(1000002L).orElseThrow().getState());
+        assertEquals(OrderStateType.CANCELED, orderRepository.findById(1000005L).orElseThrow().getState());
+        product = productRepository.findById(productId);
+        assertTrue(product.isPresent());
+        assertEquals(11, product.get().getQuantity());
     }
 }

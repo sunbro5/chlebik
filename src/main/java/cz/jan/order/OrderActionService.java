@@ -10,6 +10,7 @@ import cz.jan.order.repository.model.OrderItemEntity;
 import cz.jan.order.strategy.AbstractOrderStrategy;
 import cz.jan.product.repository.ProductEntity;
 import cz.jan.product.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -28,27 +29,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class OrderActionService {
+
 
     @Value("${chlebik.order.invalidate.time:30}")
     private int invalidateBeforeMinutes;
     private final OrderService orderService;
     private final ProductRepository productRepository;
-    private final Map<OrderStateType, AbstractOrderStrategy> orderStrategyByType;
 
-    public OrderActionService(OrderService orderService, ProductRepository productRepository,
-                              List<AbstractOrderStrategy> orderStrategies) {
-        this.orderService = orderService;
-        this.productRepository = productRepository;
-        this.orderStrategyByType = orderStrategies.stream()
-                .collect(Collectors.toMap(AbstractOrderStrategy::getType, Function.identity()));
-    }
-
-    @Retryable(retryFor = OptimisticLockingFailureException.class, maxAttempts = 20,
-            backoff = @Backoff(delay = 5, multiplier = 2, random = true))
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Order createOrder(CreateOrderRequest orderRequest) {
+    public Order createOrderAndTakeProducts(CreateOrderRequest orderRequest) {
         List<Long> productIds = orderRequest.items().stream()
                 .map(CreateOrderItemRequest::productId)
                 .toList();
@@ -60,14 +51,23 @@ public class OrderActionService {
         return orderService.createOrder(orderRequest, productsToAddById);
     }
 
-    public void orderPayment(long orderId) {
-        OrderEntity orderEntity = orderService.getOrderEntityOrThrow(orderId);
-        orderStrategyByType.get(orderEntity.getState()).orderPayment(orderEntity);
+    public void cancelOrderAndReleaseProducts( OrderEntity orderEntity) {
+        releaseProductsQuantity(orderEntity);
+        orderService.setOrderState(orderEntity, OrderStateType.CANCELED);
     }
 
-    public void cancelOrder(long orderId) {
-        OrderEntity orderEntity = orderService.getOrderEntityOrThrow(orderId);
-        orderStrategyByType.get(orderEntity.getState()).orderCancel(orderEntity);
+    public void cancelOrdersAndReleaseProducts() {
+        OffsetDateTime before = OffsetDateTime.now().minusMinutes(invalidateBeforeMinutes);
+        List<OrderEntity> ordersToCancel = orderService.getCreatedOrderEntityBeforeTime(before);
+        if (ordersToCancel.isEmpty()) {
+            return;
+        }
+        log.info("Going to cancel invalid orders {}", ordersToCancel.stream()
+                .map(OrderEntity::getId)
+                .toList());
+
+        releaseProductsQuantity(ordersToCancel);
+        orderService.setOrdersState(ordersToCancel, OrderStateType.CANCELED);
     }
 
     private void decreaseProductQuantityForOrder(CreateOrderRequest orderRequest, Map<Long, ProductEntity> productsToAddById) {
@@ -91,23 +91,6 @@ public class OrderActionService {
         }
     }
 
-    @Transactional
-    @Retryable(retryFor = OptimisticLockingFailureException.class, maxAttempts = 20,
-            backoff = @Backoff(delay = 5, multiplier = 2, random = true))
-    public void invalidateOldOrders() {
-        OffsetDateTime before = OffsetDateTime.now().minusMinutes(invalidateBeforeMinutes);
-        List<OrderEntity> ordersToCancel = orderService.getCreatedOrderEntityBeforeTime(before);
-        if (ordersToCancel.isEmpty()) {
-            return;
-        }
-        log.info("Going to cancel invalid orders {}", ordersToCancel.stream()
-                .map(OrderEntity::getId)
-                .toList());
-
-        releaseProductsQuantity(ordersToCancel);
-        orderService.setOrdersState(ordersToCancel, OrderStateType.CANCELED);
-    }
-
     private void releaseProductsQuantity(List<OrderEntity> ordersToCancel) {
         Set<Long> productIds = ordersToCancel.stream()
                 .flatMap(orderEntity -> orderEntity.getItems().stream())
@@ -121,12 +104,30 @@ public class OrderActionService {
         ordersToCancel.stream()
                 .flatMap(orderEntity -> orderEntity.getItems().stream())
                 .forEach(orderItemEntity -> {
-                    ProductEntity product = productsToReleaseQuantity.get(orderItemEntity.getProduct().getId());
-                    long newProductQuantity = product.getQuantity() + orderItemEntity.getQuantity();
-                    product.setQuantity(newProductQuantity);
-                    log.info("Release product {} to quantity {}", product.getId(), product.getQuantity());
-                    productRepository.save(product);
+                    releaseProduct(orderItemEntity, productsToReleaseQuantity);
                 });
     }
 
+    private void releaseProductsQuantity(OrderEntity orderToCancel) {
+        Set<Long> productIds = orderToCancel.getItems().stream()
+                .map(OrderItemEntity::getProduct)
+                .map(ProductEntity::getId)
+                .collect(Collectors.toSet());
+
+        Map<Long, ProductEntity> productsToReleaseQuantity = productRepository.findAllWithLock(productIds).stream()
+                .collect(Collectors.toMap(ProductEntity::getId, Function.identity()));
+
+        orderToCancel.getItems()
+                .forEach(orderItemEntity -> {
+                    releaseProduct(orderItemEntity, productsToReleaseQuantity);
+                });
+    }
+
+    private void releaseProduct(OrderItemEntity orderItemEntity, Map<Long, ProductEntity> productsToReleaseQuantity){
+        ProductEntity product = productsToReleaseQuantity.get(orderItemEntity.getProduct().getId());
+        long newProductQuantity = product.getQuantity() + orderItemEntity.getQuantity();
+        product.setQuantity(newProductQuantity);
+        log.info("Release product {} to quantity {}", product.getId(), product.getQuantity());
+        productRepository.save(product);
+    }
 }
