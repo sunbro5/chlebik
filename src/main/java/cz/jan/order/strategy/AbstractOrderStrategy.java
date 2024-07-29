@@ -1,6 +1,5 @@
 package cz.jan.order.strategy;
 
-import cz.jan.order.OrderActionDelegator;
 import cz.jan.order.OrderActionService;
 import cz.jan.order.OrderService;
 import cz.jan.order.model.OrderStateType;

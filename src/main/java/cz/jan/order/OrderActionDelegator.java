@@ -1,17 +1,11 @@
 package cz.jan.order;
 
-import cz.jan.order.exception.OrderProductQuantityException;
-import cz.jan.order.model.CreateOrderItemRequest;
 import cz.jan.order.model.CreateOrderRequest;
 import cz.jan.order.model.Order;
 import cz.jan.order.model.OrderStateType;
 import cz.jan.order.repository.model.OrderEntity;
-import cz.jan.order.repository.model.OrderItemEntity;
 import cz.jan.order.strategy.AbstractOrderStrategy;
-import cz.jan.product.repository.ProductEntity;
-import cz.jan.product.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -19,11 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
