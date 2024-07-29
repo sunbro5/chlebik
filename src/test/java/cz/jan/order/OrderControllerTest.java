@@ -6,6 +6,7 @@ import cz.jan.order.model.CreateOrderItemRequest;
 import cz.jan.order.model.CreateOrderRequest;
 import cz.jan.order.model.Order;
 import cz.jan.order.model.OrderStateType;
+import cz.jan.order.repository.model.OrderEntity;
 import cz.jan.product.repository.ProductEntity;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,8 @@ class OrderControllerTest extends AbstractChlebikIntegrationTest {
                 .build();
         Order order = callPostWithBody("/api/order", orderRequest, Order.class);
 
-        assertTrue(orderRepository.findById(order.orderId()).isPresent());
+        OrderEntity savedOder = orderRepository.findById(order.orderId()).orElseThrow();
+        assertEquals(1,savedOder.getItems().size());
     }
 
     @Test

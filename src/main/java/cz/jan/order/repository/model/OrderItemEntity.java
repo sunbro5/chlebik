@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.NoArgsConstructor;
 
 @Builder
@@ -28,12 +29,11 @@ public class OrderItemEntity {
     private Long id;
 
     @ManyToOne
-    //@MapsId("orderId")
+    @ToString.Exclude
     @JoinColumn(name = "ORDER_ID")
     private OrderEntity order;
 
     @ManyToOne
-    //@MapsId("productId")
     @JoinColumn(name = "PRODUCT_ID")
     private ProductEntity product;
 

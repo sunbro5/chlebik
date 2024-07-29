@@ -46,6 +46,7 @@ public class OrderService {
 
     public Order createOrder(CreateOrderRequest orderRequest, Map<Long, ProductEntity> productsToAddById) {
         OrderEntity orderToSave = orderMapper.toCreateOrderEntity(orderRequest, productsToAddById);
+        orderToSave.getItems().forEach(orderItemEntity -> orderItemEntity.setOrder(orderToSave));
         OrderEntity savedOrder = orderRepository.save(orderToSave);
         log.info("Created order {}", savedOrder);
         return orderMapper.toOrder(savedOrder);

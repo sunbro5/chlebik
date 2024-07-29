@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    private final OrderActionDelegator orderActionFacade;
+    private final OrderActionDelegator orderActionDelegator;
     private final OrderService orderService;
 
     @GetMapping
@@ -34,17 +34,17 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody @Valid CreateOrderRequest orderRequest) {
-        return orderActionFacade.createOrder(orderRequest);
+        return orderActionDelegator.createOrder(orderRequest);
     }
 
     @PostMapping("/{orderId}/payment")
     public void orderPayment(@PathVariable long orderId) {
-        orderActionFacade.orderPayment(orderId);
+        orderActionDelegator.orderPayment(orderId);
     }
 
     @PostMapping("/{orderId}/cancel")
     public void cancelOrder(@PathVariable long orderId) {
-        orderActionFacade.cancelOrder(orderId);
+        orderActionDelegator.cancelOrder(orderId);
     }
 
 
