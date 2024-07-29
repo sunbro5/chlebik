@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class OrderActionDelegator {
 
     private final OrderService orderService;
