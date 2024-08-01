@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integrationTest")
-public abstract class AbstractChlebikIntegrationTest {
+public abstract class AbstractEshopIntegrationTest {
 
     @Autowired
     protected MockMvc mockMvc;

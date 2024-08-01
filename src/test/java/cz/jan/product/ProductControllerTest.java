@@ -1,6 +1,6 @@
 package cz.jan.product;
 
-import cz.jan.AbstractChlebikIntegrationTest;
+import cz.jan.AbstractEshopIntegrationTest;
 import cz.jan.product.model.CreateProductRequest;
 import cz.jan.product.model.Product;
 import cz.jan.product.model.UpdateProductRequest;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ProductControllerTest extends AbstractChlebikIntegrationTest {
+class ProductControllerTest extends AbstractEshopIntegrationTest {
 
     @Test
     void createProduct() throws Exception {

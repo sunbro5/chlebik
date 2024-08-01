@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class InvalidateOrderJob {
 
-    private final OrderActionDelegator orderActionService;
+    private final OrderActionDelegator orderActionDelegator;
 
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
     public void invalidateOrder() {
-        orderActionService.invalidateOldOrders();
+        orderActionDelegator.invalidateOldOrders();
     }
 }

@@ -1,6 +1,6 @@
 package cz.jan.order;
 
-import cz.jan.AbstractChlebikIntegrationTest;
+import cz.jan.AbstractEshopIntegrationTest;
 import cz.jan.order.model.OrderStateType;
 import cz.jan.order.repository.model.OrderEntity;
 import cz.jan.product.repository.ProductEntity;
@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-class InvalidateOrderJobTest extends AbstractChlebikIntegrationTest {
+class InvalidateOrderJobTest extends AbstractEshopIntegrationTest {
 
     @Test()
     void invalidateOrder() {

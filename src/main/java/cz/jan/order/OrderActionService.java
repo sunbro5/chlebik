@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class OrderActionService {
 
 
-    @Value("${chlebik.order.invalidate.time:30}")
+    @Value("${Eshop.order.invalidate.time:30}")
     private int invalidateBeforeMinutes;
     private final OrderService orderService;
     private final ProductRepository productRepository;

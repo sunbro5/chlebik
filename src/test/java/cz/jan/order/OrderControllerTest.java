@@ -1,6 +1,6 @@
 package cz.jan.order;
 
-import cz.jan.AbstractChlebikIntegrationTest;
+import cz.jan.AbstractEshopIntegrationTest;
 import cz.jan.common.error.ApiError;
 import cz.jan.order.model.CreateOrderItemRequest;
 import cz.jan.order.model.CreateOrderRequest;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class OrderControllerTest extends AbstractChlebikIntegrationTest {
+class OrderControllerTest extends AbstractEshopIntegrationTest {
 
     @Test
     void givenOrderOneItem_whenCallEndpoint_shouldSaveOrder() throws Exception {
